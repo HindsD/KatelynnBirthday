@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Katelynn’s Mini-Golf Course ⛳️💙</title>
+  <meta name="theme-color" content="#3b82f6" />
+  <link rel="icon" href="data:,">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="wrap">
+    <div class="brand">💙⛳️ <span>Katelynn’s Mini-Golf Course</span></div>
+    <div class="spacer"></div>
+    <!-- (removed Motion toggle) -->
+  </header>
+
+  <!-- Petal overlay (full-screen, for pretty animations) -->
+  <div id="petalLayer" aria-hidden="true"></div>
+
+  <main class="wrap">
+    <section id="gameScreen" class="card">
+      <h1 class="game-title">Happy Birthday, Katelynn! 🎂</h1>
+      <p class="muted center">Drag backwards from the ball to aim & set power. Sink the putt to unlock your card.</p>
+      <div class="golfWrap">
+        <canvas id="golf" aria-label="Mini golf course"></canvas>
+        <div class="hud">
+          <span class="pill">Hole 1 · Par 3</span>
+          <span class="pill score" id="scorePill">Strokes: 0</span>
+        </div>
+        <div class="center" style="margin-top:4px">
+          <button id="skipLink" class="linklike" title="Enter a code to skip">Have a code?</button>
+        </div>
+      </div>
+      <div class="cheer muted">
+        <span class="dog">🐶</span><span>Tundra</span><span class="sep">·</span><span class="dog">🐕‍🦺</span><span>Mitzi</span>
+      </div>
+    </section>
+
+    <section id="mainScreen" class="card hidden">
+      <nav class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" class="tab" data-target="note">💌 Birthday note</button>
+        <button role="tab" aria-selected="false" class="tab" data-target="reasons">💐 10 things</button>
+        <button role="tab" aria-selected="false" class="tab" data-target="vouchers">🎟️ Vouchers</button>
+      </nav>
+
+      <section id="view-note" class="view" role="tabpanel" aria-labelledby="note">
+        <div class="envelope" id="envelope" aria-label="Open your card">
+          <div class="flap"></div>
+          <div class="letter"><p id="letterText"></p></div>
+        </div>
+        <div class="center" style="margin-top:10px">
+          <button id="openCard" class="secondary">Open your card</button>
+        </div>
+      </section>
+
+      <section id="view-reasons" class="view hidden" role="tabpanel" aria-labelledby="reasons">
+        <h2>10 reasons I adore you, Unc 💙</h2>
+        <div class="reveal open"><ul id="reasonsList"></ul></div>
+      </section>
+
+      <section id="view-vouchers" class="view hidden" role="tabpanel" aria-labelledby="vouchers">
+        <h2>Date night vouchers 🎟️</h2>
+        <div id="vouchersWrap"></div>
+        <small class="muted">Redeem by texting me a 🎟️</small>
+      </section>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="game.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -13,15 +13,16 @@
   <header class="wrap">
     <div class="brand">💙⛳️ <span>Katelynn’s Mini-Golf Course</span></div>
     <div class="spacer"></div>
-    <!-- (removed Motion toggle) -->
   </header>
 
-  <!-- Petal overlay (full-screen, for pretty animations) -->
+  <!-- Petal overlay -->
   <div id="petalLayer" aria-hidden="true"></div>
+  <!-- Modal portal -->
+  <div id="modalRoot" aria-live="polite"></div>
 
   <main class="wrap">
     <section id="gameScreen" class="card">
-      <h1 class="game-title">Happy Birthday, Katelynn! 🎂</h1>
+      <h1 class="game-title">Happy Birthday, Katelynn!!! </h1>
       <p class="muted center">Drag backwards from the ball to aim & set power. Sink the putt to unlock your card.</p>
       <div class="golfWrap">
         <canvas id="golf" aria-label="Mini golf course"></canvas>
@@ -32,9 +33,6 @@
         <div class="center" style="margin-top:4px">
           <button id="skipLink" class="linklike" title="Enter a code to skip">Have a code?</button>
         </div>
-      </div>
-      <div class="cheer muted">
-        <span class="dog">🐶</span><span>Tundra</span><span class="sep">·</span><span class="dog">🐕‍🦺</span><span>Mitzi</span>
       </div>
     </section>
 

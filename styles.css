@@ -34,16 +34,26 @@ button:active{transform:translateY(1px) scale(.99)}
 .center{text-align:center} .muted{color:var(--muted)} .hidden{display:none}
 .pill{display:inline-flex; align-items:center; gap:.5rem; border-radius:999px; padding:.45rem .8rem; background:var(--card); color:var(--muted); border:1px solid rgba(0,0,0,.06)}
 .score{color:#0ea5e9; font-weight:800}
-.game-title{margin:6px 0 10px; text-align:center; font-size:clamp(24px,4.2vw,40px)}
+.game-title{margin:6px 0 10px; text-align:center; font-size:clamp(22px,4.2vw,40px)}
 
 /* golf */
 .golfWrap{display:grid; gap:10px; justify-items:center}
-#golf{ width:min(740px, 100%); aspect-ratio:16/9; border-radius:18px;
+#golf{
+  width:min(740px, 100%);
+  aspect-ratio: 16/9;
+  border-radius:18px;
   background: radial-gradient(100% 120% at 50% 20%, #d9f7c7 0%, #bff0a8 50%, #a8e58f 100%);
-  border:2px solid #34b3a0; box-shadow:var(--shadow); touch-action:none; }
-.hud{display:flex; gap:8px; align-items:center}
-.cheer{display:flex; justify-content:center; align-items:center; gap:8px; margin-top:8px}
-.cheer .sep{opacity:.5} .cheer .dog{filter:grayscale(1) brightness(1.1)}
+  border:2px solid #34b3a0; box-shadow:var(--shadow); touch-action:none;
+}
+.hud{display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:center}
+
+/* MOBILE golf tweaks */
+@media (max-width: 560px){
+  .wrap{ padding:14px 14px 60px; }
+  .card{ padding:14px; border-radius:16px; }
+  #golf{ border-radius:14px; border-width:1.5px; }
+  .pill{ padding:.4rem .7rem; }
+}
 
 /* petals overlay */
 #petalLayer{ position:fixed; inset:0; pointer-events:none; z-index:25; overflow:visible; }
@@ -76,13 +86,38 @@ button:active{transform:translateY(1px) scale(.99)}
 }
 .letter{
   position:absolute; left:16px; right:16px; bottom:16px;
-  max-height:78%;                          /* ← allows lots more text */
-  background:#fff; border-radius:12px; display:block; padding:22px;
-  overflow:auto;                           /* ← scroll if needed */
-  transform:translateY(42%); opacity:0;    /* closed: hidden */
-  transition:transform .8s cubic-bezier(.2,.6,.1,1), opacity .5s ease;
-  z-index:2;
+  max-height:78%; background:#fff; border-radius:12px; display:block; padding:22px;
+  overflow:auto; transform:translateY(42%); opacity:0;
+  transition:transform .8s cubic-bezier(.2,.6,.1,1), opacity .5s ease; z-index:2;
 }
 .envelope.open .flap{ transform:rotateX(180deg); }
 .envelope.open .letter{ transform:translateY(-6%); opacity:1; }
 .letter p{ margin:0; text-align:center; font-size:clamp(16px,2.6vw,20px); line-height:1.65; white-space:pre-wrap; }
+
+/* ===== Modals ===== */
+.modalOverlay{
+  position:fixed; inset:0; background:rgba(10,20,35,.45); backdrop-filter: blur(6px);
+  display:grid; place-items:center; z-index:40; animation:fadeIn .18s ease-out;
+}
+@keyframes fadeIn{ from{opacity:0} to{opacity:1} }
+.modal{
+  width:min(520px, 92vw);
+  background:var(--card); color:var(--text); border-radius:16px; box-shadow:var(--shadow);
+  border:1px solid rgba(0,0,0,.08); padding:16px 16px 14px;
+  transform:translateY(6px); animation:pop .18s ease-out forwards;
+}
+@keyframes pop{ to{ transform:translateY(0) } }
+.modalHeader{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
+.modalTitle{ font-weight:800; font-size:18px; }
+.modalBody{ padding:8px 2px 10px; }
+.modalBody p{ margin:0 0 10px; }
+.modalActions{ display:flex; gap:8px; justify-content:flex-end; margin-top:8px; }
+.input{
+  width:100%; border-radius:12px; border:1px solid rgba(0,0,0,.12); padding:.7rem .9rem;
+  font: inherit; outline:none;
+}
+.input:focus{ box-shadow:0 0 0 3px rgba(37,99,235,.18); border-color:#93c5fd; }
+
+/* compact voucher cards (unchanged rendering) */
+.voucher{ display:grid; gap:6px; align-items:start; grid-template-columns: 1fr auto; border:1px dashed rgba(0,0,0,.18); border-radius:12px; padding:12px 14px; margin:10px 0; }
+.voucher > .secondary { align-self:center; }

@@ -1,4 +1,4 @@
-// Mini-golf: light-green turf, fun obstacles + windmill + cars/plates, NO confetti.
+// Mini-golf: light-green turf, fun obstacles + windmill + cars/plates, mobile-aware scaling.
 (function () {
   function startMiniGolf(sel) {
     const canvas = typeof sel === "string" ? document.querySelector(sel) : sel;
@@ -7,7 +7,7 @@
 
     let DPR = 1, W = 0, H = 0;
 
-    const course = { pad: 18, tee: null, hole: null, windmill: null, obstacles: [] };
+    const course = { pad: 18, tee: null, hole: null, windmill: null, obstacles: [], compact:false };
 
     // physics
     const FRICTION = 0.991, STOP = 0.045, BOUNCE = 0.85, MAX_SPEED = 10;
@@ -20,17 +20,28 @@
     function updateScore(){ if(scoreEl) scoreEl.textContent = `Strokes: ${strokes}`; }
     function resetBall(soft=false){ ball.x=course.tee.x; ball.y=course.tee.y; ball.vx=ball.vy=0; ball.rolling=false; if(!soft){strokes=0; updateScore();} }
 
-    // build course (keep your obstacles + wings + windmill)
     function buildCourse(){
       const p = course.pad;
-      course.tee  = { x: p + 52, y: H - p - 48, r: 7 };
-      course.hole = { x: W - p - 84, y: p + 68, r: 16 };
-      course.windmill = { cx: course.hole.x, cy: course.hole.y, len: 50, thick: 8, speed: 0.9 };
+      // scale down on small canvases
+      course.compact = W < 430;
+      const scale = course.compact ? 0.85 : 1;
+
+      course.tee  = { x: p + 30*scale, y: H - p - 168*scale, r: 7*scale };
+      course.hole = { x: W - p - 84*scale, y: p + 68*scale, r: 20*scale };
+      course.windmill = { cx: course.hole.x, cy: course.hole.y, len: 50*scale, thick: 8*scale, speed: 0.9 };
+
+      const wallW = (course.compact ? 14 : 18);
+      const wingW = (course.compact ? 10 : 12);
+      const wingH1 = (course.compact ? 92 : 110);
+      const wingH2 = (course.compact ? 88 : 100);
+
       course.obstacles = [
-        { x: W*0.42, y: H*0.30, w: 18, h: H*0.48 },                // center wall
-        { x: course.hole.x - 120, y: course.hole.y - 70, w: 12, h:110, angle: 22, type:"wing" },
-        { x: course.hole.x - 58,  y: course.hole.y + 18, w: 12, h:100, angle:-28, type:"wing" }
+        { x: W*0.42, y: H*(course.compact?0.32:0.30), w: wallW, h: H*(course.compact?0.46:0.48) },
+        { x: course.hole.x - 120*scale, y: course.hole.y - 70*scale, w: wingW, h: wingH1, angle: 22, type:"wing" },
+        { x: course.hole.x - 58*scale,  y: course.hole.y + 18*scale, w: wingW, h: wingH2, angle:-28, type:"wing" }
       ];
+
+      ball.r = 7*scale;
       resetBall(true);
     }
 
@@ -45,18 +56,20 @@
     }
     size(); addEventListener("resize", size);
 
-    // input
     function pt(e){ const r = canvas.getBoundingClientRect(); const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left; const y=(e.touches?e.touches[0].clientY:e.clientY)-r.top; return {x,y}; }
     canvas.addEventListener("pointerdown", (e)=>{
       if (sunk || ball.rolling) return;
       const p = pt(e), dx=p.x-ball.x, dy=p.y-ball.y;
-      if (Math.hypot(dx,dy) <= ball.r+16) { aiming=true; aimStart=p; aimEnd=p; canvas.setPointerCapture(e.pointerId); }
+      // slightly larger tap target on compact screens
+      const hitR = ball.r + (course.compact ? 24 : 16);
+      if (Math.hypot(dx,dy) <= hitR) { aiming=true; aimStart=p; aimEnd=p; canvas.setPointerCapture(e.pointerId); }
     });
     canvas.addEventListener("pointermove", (e)=>{ if(aiming) aimEnd=pt(e); });
     canvas.addEventListener("pointerup", ()=>{
       if(!aiming) return;
       const drag = {x: aimStart.x-aimEnd.x, y: aimStart.y-aimEnd.y};
-      const power = Math.min(1, Math.hypot(drag.x,drag.y)/160);
+      const divisor = course.compact ? 150 : 160;
+      const power = Math.min(1, Math.hypot(drag.x,drag.y)/divisor);
       const ang = Math.atan2(drag.y, drag.x);
       ball.vx = Math.cos(ang)*power*MAX_SPEED;
       ball.vy = Math.sin(ang)*power*MAX_SPEED;
@@ -64,7 +77,6 @@
       aiming=false; aimStart=aimEnd=null;
     });
 
-    // collisions
     function circleRectCollide(cx,cy,r, rx,ry,rw,rh){
       const nx = Math.max(rx, Math.min(cx, rx+rw));
       const ny = Math.max(ry, Math.min(cy, ry+rh));
@@ -141,7 +153,7 @@
         }
       }
 
-      // windmill (always spinning now)
+      // windmill
       const wm = course.windmill;
       const angle = (performance.now()/1000) * wm.speed;
       const x1 = wm.cx + Math.cos(angle)*wm.len, y1 = wm.cy + Math.sin(angle)*wm.len;
@@ -162,40 +174,37 @@
       // cup capture
       const hx=course.hole.x, hy=course.hole.y, hr=course.hole.r;
       const d = Math.hypot(ball.x-hx, ball.y-hy);
-      if(!sunk && d < 42){
-        const pull = 0.55;
-        ball.vx += (hx-ball.x)*pull*0.018;
-        ball.vy += (hy-ball.y)*pull*0.018;
-      }
-      if(!sunk && d < hr*0.95 && Math.hypot(ball.vx,ball.vy) < 0.95){
-        sunk = true; ball.rolling=false; ball.vx=ball.vy=0; ball.x=hx; ball.y=hy; onSunk();
-      }
+      if(!sunk && d < 42){ const pull = 0.55; ball.vx += (hx-ball.x)*pull*0.018; ball.vy += (hy-ball.y)*pull*0.018; }
+      if(!sunk && d < hr*0.95 && Math.hypot(ball.vx,ball.vy) < 0.95){ sunk = true; ball.rolling=false; ball.vx=ball.vy=0; ball.x=hx; ball.y=hy; onSunk(); }
 
-      // anti-stall nudge
-      if(!sunk && !ball.rolling){
-        const idle = performance.now() - lastMoveTime;
-        if(idle > 18000){
-          ball.vx += (course.hole.x - ball.x) * 0.0012;
-          ball.vy += (course.hole.y - ball.y) * 0.0012;
-          ball.rolling = true;
-          lastMoveTime = performance.now();
-        }
-      }
+    //   if(!sunk && !ball.rolling){
+    //     const idle = performance.now() - lastMoveTime;
+    //     if(idle > 800){
+    //       ball.vx += (course.hole.x - ball.x) * 0.0012;
+    //       ball.vy += (course.hole.y - ball.y) * 0.0012;
+    //       ball.rolling = true;
+    //       lastMoveTime = performance.now();
+    //     }
+    //   }
     }
 
     function draw(){
       ctx.clearRect(0,0,W,H);
       const p=course.pad;
+      // softer stripes on mobile
+      const stripeAlpha = course.compact ? 0.08 : 0.12;
+      const stripeGap = course.compact ? 26 : 22;
+
       ctx.fillStyle = "#bff0a8"; ctx.fillRect(p,p,W-2*p,H-2*p);
-      ctx.fillStyle = "rgba(255,255,255,.12)";
-      for(let y=p+20; y<H-p; y+=22){ ctx.fillRect(p+10, y, W-2*p-20, 10); }
-      ctx.strokeStyle = "#34b3a0"; ctx.lineWidth = 3; ctx.strokeRect(p,p,W-2*p,H-2*p);
+      ctx.fillStyle = `rgba(255,255,255,${stripeAlpha})`;
+      for(let y=p+20; y<H-p; y+=stripeGap){ ctx.fillRect(p+10, y, W-2*p-20, 10); }
+      ctx.strokeStyle = "#34b3a0"; ctx.lineWidth = course.compact ? 2 : 3; ctx.strokeRect(p,p,W-2*p,H-2*p);
 
       // center wall
       ctx.fillStyle = "#93c5fd";
       for(const ob of course.obstacles){ if(!ob.type) ctx.fillRect(ob.x,ob.y,ob.w,ob.h); }
 
-      // funnel wings
+      // wings
       for(const ob of course.obstacles){
         if(ob.type === "wing"){
           ctx.save(); ctx.translate(ob.x + ob.w/2, ob.y + ob.h/2); ctx.rotate((ob.angle||0)*Math.PI/180);
@@ -204,8 +213,10 @@
         }
       }
 
-      // retro decor
+      // retro decor (hide on very small widths)
+      const showDecor = W >= 380;
       function drawCar(x, y, scale=1, body="#0ea5e9"){
+        if(!showDecor) return;
         ctx.save(); ctx.translate(x,y); ctx.scale(scale,scale);
         ctx.fillStyle = body; ctx.fillRect(-32,-12,64,24);
         ctx.fillStyle = "#374151"; ctx.fillRect(-16,-18,32,10);
@@ -215,6 +226,7 @@
         ctx.restore();
       }
       function drawPlate(x, y, text="UNC", rot=0){
+        if(!showDecor) return;
         ctx.save(); ctx.translate(x,y); ctx.rotate(rot*Math.PI/180);
         ctx.fillStyle = "#e5e7eb"; ctx.fillRect(-26,-8,52,16);
         ctx.strokeStyle = "#9ca3af"; ctx.strokeRect(-26,-8,52,16);
@@ -238,20 +250,18 @@
 
       // hole
       const hx=course.hole.x, hy=course.hole.y, hr=course.hole.r;
-      ctx.lineWidth=3; ctx.strokeStyle="#60a5fa"; ctx.beginPath(); ctx.arc(hx, hy, hr+3, 0, Math.PI*2); ctx.stroke();
+      ctx.lineWidth=course.compact?2:3; ctx.strokeStyle="#60a5fa"; ctx.beginPath(); ctx.arc(hx, hy, hr+3, 0, Math.PI*2); ctx.stroke();
       ctx.fillStyle="#0b1020"; ctx.beginPath(); ctx.arc(hx, hy, hr, 0, Math.PI*2); ctx.fill();
       const px=hx+hr+8, py=hy; ctx.lineWidth=2; ctx.strokeStyle="#e5e7eb";
       ctx.beginPath(); ctx.moveTo(px,py+12); ctx.lineTo(px,py-24); ctx.stroke();
       ctx.fillStyle="#f43f5e"; ctx.beginPath(); ctx.moveTo(px,py-24); ctx.lineTo(px+18,py-20); ctx.lineTo(px,py-12); ctx.closePath(); ctx.fill();
 
-      // aim line
       if(aiming && aimStart && aimEnd){
         const dx=aimStart.x-aimEnd.x, dy=aimStart.y-aimEnd.y;
         ctx.strokeStyle='#0f172a'; ctx.setLineDash([6,6]); ctx.lineWidth=2;
         ctx.beginPath(); ctx.moveTo(ball.x,ball.y); ctx.lineTo(ball.x+dx,ball.y+dy); ctx.stroke(); ctx.setLineDash([]);
       }
 
-      // ball
       ctx.fillStyle = sunk ? '#d1d5db' : '#fff'; ctx.beginPath(); ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2); ctx.fill();
       ctx.strokeStyle='rgba(0,0,0,.15)'; ctx.stroke();
       ctx.fillStyle='rgba(0,0,0,.12)'; ctx.beginPath(); ctx.ellipse(ball.x+2,ball.y+3,ball.r*1.1,ball.r*.7,0,0,Math.PI*2); ctx.fill();

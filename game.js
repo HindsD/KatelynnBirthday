@@ -25,7 +25,7 @@
       course.compact = W < 430;                 // phone breakpoint
       const scale = course.compact ? 0.95 : 1;
 
-      course.tee  = { x: p + 52*scale, y: H - p - 48*scale, r: 7*scale };
+      course.tee  = { x: p + 52*scale, y: H - p - 148*scale, r: 7*scale };
       course.hole = { x: W - p - 84*scale, y: p + 68*scale, r: (course.compact ? 18 : 16)*scale };
 
       if (course.compact) {

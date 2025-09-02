@@ -107,6 +107,21 @@ button[disabled]{ opacity:.6; cursor:not-allowed; }
 
 /* Mobile: make the card lighter and the canvas taller */
 .card:has(#golf){ padding: 12px 12px 16px; }
+
+/* Safari fallback */
+.gameCard{ padding: 12px 12px 16px; }
+
+/* Existing mobile variant */
+@media (max-width: 500px){
+  .card:has(#golf){ background:transparent; box-shadow:none; border:none; padding:6px 6px 0; }
+  #golf{ aspect-ratio: 4 / 3; max-width:100%; height:auto; border-radius:14px; border-width:1.5px; }
+}
+
+/* Safari fallback for the mobile variant */
+@media (max-width: 500px){
+  .gameCard{ background:transparent; box-shadow:none; border:none; padding:6px 6px 0; }
+}
+
 @media (max-width: 560px){
   .wrap{ padding:14px 14px 60px; }
   .card{ padding:14px; border-radius:16px; }

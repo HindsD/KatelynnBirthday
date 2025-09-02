@@ -86,7 +86,11 @@
       ball.vy = Math.sin(ang)*power*MAX_SPEED;
       ball.rolling=true; strokes++; updateScore();
       aiming=false; aimStart=aimEnd=null;
+      try { canvas.releasePointerCapture?.(e.pointerId); } catch {}
     }, { passive:false });
+    canvas.addEventListener("pointercancel", (e)=>{ try { canvas.releasePointerCapture?.(e.pointerId); } catch {} }, { passive:false });
+    document.addEventListener('touchmove', e => { if (aiming) e.preventDefault(); }, { passive:false });
+
 
     function circleRectCollide(cx,cy,r, rx,ry,rw,rh){
       const nx = Math.max(rx, Math.min(cx, rx+rw));

@@ -186,3 +186,7 @@ button:active{transform:translateY(1px) scale(.99)}
   0%{ transform:rotate(-18deg) scale(.9); opacity:0 }
   100%{ transform:rotate(-18deg) scale(1); opacity:.88 }
 }
+
+@media (max-width: 430px){
+  #golf{ aspect-ratio: 3 / 2; }   /* was 16/9 – this gives more vertical room */
+}

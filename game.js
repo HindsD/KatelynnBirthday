@@ -22,21 +22,19 @@
 
     function buildCourse(){
       const p = course.pad;
-      course.compact = W < 430;             // phone breakpoint
-      const scale = course.compact ? 0.9 : 1;
+      course.compact = W < 430;                 // phone breakpoint
+      const scale = course.compact ? 0.95 : 1;
 
-      course.tee  = { x: p + 52*scale, y: H - p - 148*scale, r: 7*scale };
-      course.hole = { x: W - p - 84*scale, y: p + 68*scale, r: 16*scale };
+      course.tee  = { x: p + 52*scale, y: H - p - 48*scale, r: 7*scale };
+      course.hole = { x: W - p - 84*scale, y: p + 68*scale, r: (course.compact ? 18 : 16)*scale };
 
       if (course.compact) {
-        // MOBILE: wide-open, no obstacles, no windmill (keeps decor!)
-        course.obstacles = [];
+        course.obstacles = [];                  // remove walls/wings on phones
         course.windmill = null;
       } else {
-        // DESKTOP/TABLET: keep the fun course
         course.windmill = { cx: course.hole.x, cy: course.hole.y, len: 50, thick: 8, speed: 0.9 };
         course.obstacles = [
-          { x: W*0.42, y: H*0.30, w: 18, h: H*0.48 },                // center wall
+          { x: W*0.42, y: H*0.30, w: 18, h: H*0.48 },
           { x: course.hole.x - 120, y: course.hole.y - 70, w: 12, h:110, angle: 22, type:"wing" },
           { x: course.hole.x - 58,  y: course.hole.y + 18, w: 12, h:100, angle:-28, type:"wing" }
         ];
@@ -45,6 +43,7 @@
       ball.r = 7*scale;
       resetBall(true);
     }
+
 
     function size(){
       const r = canvas.getBoundingClientRect();
@@ -59,24 +58,35 @@
 
     function pt(e){ const r = canvas.getBoundingClientRect(); const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left; const y=(e.touches?e.touches[0].clientY:e.clientY)-r.top; return {x,y}; }
     canvas.addEventListener("pointerdown", (e)=>{
+      e.preventDefault();
       if (sunk || ball.rolling) return;
       const p = pt(e), dx=p.x-ball.x, dy=p.y-ball.y;
-      // slightly larger tap target on compact screens
-      const hitR = ball.r + (course.compact ? 24 : 16);
-      if (Math.hypot(dx,dy) <= hitR) { aiming=true; aimStart=p; aimEnd=p; canvas.setPointerCapture(e.pointerId); }
-    });
-    canvas.addEventListener("pointermove", (e)=>{ if(aiming) aimEnd=pt(e); });
-    canvas.addEventListener("pointerup", ()=>{
-      if(!aiming) return;
+      const hitR = ball.r + (course.compact ? 28 : 16);     // bigger tap target on phones
+      if (Math.hypot(dx,dy) <= hitR) {
+        aiming = true;
+        aimStart = p; aimEnd = p;
+        if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+      }
+    }, { passive:false });
+
+    canvas.addEventListener("pointermove", (e)=>{
+      if (!aiming) return;
+      e.preventDefault();
+      aimEnd = pt(e);
+    }, { passive:false });
+
+    canvas.addEventListener("pointerup", (e)=>{
+      if (!aiming) return;
+      e.preventDefault();
       const drag = {x: aimStart.x-aimEnd.x, y: aimStart.y-aimEnd.y};
-      const divisor = course.compact ? 150 : 160;
+      const divisor = course.compact ? 120 : 160;           // more power per drag on phones
       const power = Math.min(1, Math.hypot(drag.x,drag.y)/divisor);
       const ang = Math.atan2(drag.y, drag.x);
       ball.vx = Math.cos(ang)*power*MAX_SPEED;
       ball.vy = Math.sin(ang)*power*MAX_SPEED;
       ball.rolling=true; strokes++; updateScore();
       aiming=false; aimStart=aimEnd=null;
-    });
+    }, { passive:false });
 
     function circleRectCollide(cx,cy,r, rx,ry,rw,rh){
       const nx = Math.max(rx, Math.min(cx, rx+rw));
@@ -177,9 +187,19 @@
       // cup capture
       const hx=course.hole.x, hy=course.hole.y, hr=course.hole.r;
       const d = Math.hypot(ball.x-hx, ball.y-hy);
-      if(!sunk && d < 42){ const pull = 0.55; ball.vx += (hx-ball.x)*pull*0.018; ball.vy += (hy-ball.y)*pull*0.018; }
-      if(!sunk && d < hr*0.95 && Math.hypot(ball.vx,ball.vy) < 0.95){ sunk = true; ball.rolling=false; ball.vx=ball.vy=0; ball.x=hx; ball.y=hy; onSunk(); }
 
+      // stronger magnet on phones
+      const pull = course.compact ? 0.75 : 0.55;
+      if (!sunk && d < 44) {
+        ball.vx += (hx-ball.x) * pull * 0.018;
+        ball.vy += (hy-ball.y) * pull * 0.018;
+      }
+
+      // allow higher capture speed on mobile
+      const speedCap = course.compact ? 1.4 : 0.95;
+      if (!sunk && d < hr*0.95 && Math.hypot(ball.vx,ball.vy) < speedCap) {
+        sunk = true; ball.rolling=false; ball.vx=ball.vy=0; ball.x=hx; ball.y=hy; onSunk();
+      }
     //   if(!sunk && !ball.rolling){
     //     const idle = performance.now() - lastMoveTime;
     //     if(idle > 800){

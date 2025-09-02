@@ -1,5 +1,5 @@
 /* =========================================================
-   Katelynn’s Mini-Golf Course — styles.css (full sheet)
+   Katelynn’s Mini-Golf Course — styles.css
    ========================================================= */
 
 /* ---------- Theme tokens ---------- */
@@ -81,12 +81,6 @@ button[disabled]{ opacity:.6; cursor:not-allowed; }
 .tab[aria-selected="true"]{ opacity:1; box-shadow:0 0 0 2px rgba(255,255,255,.7), 0 6px 16px rgba(0,0,0,.18) }
 .view{ min-height:220px }
 
-/* ---------- Lovey main screen background ---------- */
-#mainScreen.lovey{
-  background: radial-gradient(120% 120% at 50% 10%, #eaf4ff 0%, #dbeafe 40%, #e0f7ff 100%);
-  position:relative; overflow:visible;
-}
-
 /* ---------- Petals ---------- */
 #petalLayer{ position:fixed; inset:0; pointer-events:none; z-index:25; overflow:visible; }
 .petal{ position:absolute; top:-40px; font-size:18px; animation:fall linear forwards; opacity:.9; text-shadow:0 6px 18px rgba(0,0,0,.15); }
@@ -105,23 +99,10 @@ button[disabled]{ opacity:.6; cursor:not-allowed; }
 }
 .hud{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:center; }
 
-/* Mobile: make the card lighter and the canvas taller */
-.card:has(#golf){ padding: 12px 12px 16px; }
-
-/* Safari fallback */
+/* Safari fallback for :has() */
 .gameCard{ padding: 12px 12px 16px; }
 
-/* Existing mobile variant */
-@media (max-width: 500px){
-  .card:has(#golf){ background:transparent; box-shadow:none; border:none; padding:6px 6px 0; }
-  #golf{ aspect-ratio: 4 / 3; max-width:100%; height:auto; border-radius:14px; border-width:1.5px; }
-}
-
-/* Safari fallback for the mobile variant */
-@media (max-width: 500px){
-  .gameCard{ background:transparent; box-shadow:none; border:none; padding:6px 6px 0; }
-}
-
+/* Mobile tweaks */
 @media (max-width: 560px){
   .wrap{ padding:14px 14px 60px; }
   .card{ padding:14px; border-radius:16px; }
@@ -129,35 +110,61 @@ button[disabled]{ opacity:.6; cursor:not-allowed; }
   .game-title{ font-size: clamp(22px, 6vw, 28px); }
 }
 @media (max-width: 500px){
-  .card:has(#golf){ background:transparent; box-shadow:none; border:none; padding:6px 6px 0; }
+  .gameCard{ background:transparent; box-shadow:none; border:none; padding:6px 6px 0; }
   #golf{ aspect-ratio: 4 / 3; max-width:100%; height:auto; border-radius:14px; border-width:1.5px; }
 }
 
 /* =========================================================
-   Envelope (long-content friendly)
+   Envelope (smooth + Safari-safe)
    ========================================================= */
 
 .envelope{
   position:relative; width:min(560px, 100%); margin:0 auto; aspect-ratio:16/10;
-  border-radius:16px; display:grid; place-items:center; padding:16px;
+  border-radius:16px; padding:16px;
   background: linear-gradient(180deg,#cfe3ff,#b9d4ff 55%, #a8c9ff);
-  border:1px solid rgba(0,0,0,.06); perspective:1000px; cursor:pointer; z-index:2;
+  border:1px solid rgba(0,0,0,.06);
+  overflow:hidden;                        /* hide letter before open */
+  perspective: 1200px;
+  transform-style: preserve-3d;           /* enable 3D on iOS Safari */
+  cursor:pointer; z-index:2;
 }
-.flap{
-  position:absolute; inset:0; clip-path:polygon(0 0, 100% 0, 50% 58%);
-  background:linear-gradient(180deg,#93c5fd,#60a5fa);
-  transform-origin:top center; backface-visibility:hidden;
-  transition:transform .8s cubic-bezier(.2,.6,.1,1); z-index:3;
+
+.envelope .flap{
+  position:absolute; inset:0;
+  clip-path: polygon(0 0, 100% 0, 50% 58%);
+  background: linear-gradient(180deg,#93c5fd,#60a5fa);
+  transform-origin: 50% 0%;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  transform: translateZ(0) rotateX(0deg);
+  will-change: transform;
+  transition: transform 650ms cubic-bezier(.2,.8,.2,1);
+  z-index:3;
 }
-.letter{
+
+.envelope .letter{
   position:absolute; left:16px; right:16px; bottom:16px;
-  max-height:78%; background:#fff; border-radius:12px; display:block; padding:22px;
-  overflow:auto; transform:translateY(42%); opacity:0;
-  transition:transform .8s cubic-bezier(.2,.6,.1,1), opacity .5s ease; z-index:2;
+  max-height:78%;
+  background:#fff; border-radius:12px; padding:22px;
+  box-shadow:0 10px 24px rgba(0,0,0,.16);
+  overflow:auto;
+  transform: translateY(44%) rotate(-1.2deg) translateZ(0);
+  opacity: 0;                               /* hidden until open */
+  will-change: transform, opacity;
+  transition:
+    transform 700ms cubic-bezier(.2,.8,.2,1) 90ms,
+    opacity 320ms ease 120ms;
+  z-index:2;
 }
-.envelope.open .flap{ transform:rotateX(180deg); }
-.envelope.open .letter{ transform:translateY(-6%); opacity:1; }
-.letter p{ margin:0; text-align:center; font-size:clamp(16px,2.6vw,20px); line-height:1.65; white-space:pre-wrap; }
+
+/* Open state */
+.envelope.open .flap{   transform: translateZ(0) rotateX(-172deg); }
+.envelope.open .letter{ transform: translateY(-6%) rotate(.5deg) translateZ(0); opacity:1; }
+
+.letter p{
+  margin:0; text-align:center;
+  font-size:clamp(16px,2.6vw,20px);
+  line-height:1.65; white-space:pre-wrap;
+}
 
 /* =========================================================
    Modals
@@ -187,7 +194,7 @@ button[disabled]{ opacity:.6; cursor:not-allowed; }
 .input:focus{ box-shadow:0 0 0 3px rgba(37,99,235,.18); border-color:#93c5fd; }
 
 /* =========================================================
-   Vouchers (ticket cards + grid + redeemed stamp)
+   Vouchers (ticket cards + redeemed stamp)
    ========================================================= */
 
 #view-vouchers h2{ margin-bottom: 10px; }
@@ -223,17 +230,21 @@ button[disabled]{ opacity:.6; cursor:not-allowed; }
 .ticketBody{ color:var(--muted); margin-bottom:10px; min-height:40px; }
 .ticketActions{ display:flex; justify-content:flex-end; }
 
-/* Redeemed overlay element (child inside .ticket) */
+/* Tight, centered RED E E M E D! */
 .redeemedMark{
-  position:absolute; inset:0;
-  display:flex; align-items:center; justify-content:center;
+  position:absolute; top:50%; left:50%;
+  transform: translate(-50%,-50%) rotate(-18deg);
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:.25rem .5rem;
+  border:2px solid #dc2626; border-radius:8px;
   font-weight:900; font-size:26px; color:#dc2626; text-transform:uppercase;
-  transform:rotate(-18deg); opacity:0; pointer-events:none; z-index:3;
-  transition:opacity .2s ease;
+  background:rgba(255,255,255,.92);
+  opacity:0; pointer-events:none; z-index:3;
+  transition: opacity .2s ease;
 }
-.ticket.redeemed .redeemedMark{ opacity:.88; }
+.ticket.redeemed .redeemedMark{ opacity:.9; }
 .ticket.redeemed .redeemedMark{ animation: stamp .24s ease-out both; }
-@keyframes stamp{ 0%{ transform:rotate(-18deg) scale(.9); opacity:0 } 100%{ transform:rotate(-18deg) scale(1); opacity:.88 } }
+@keyframes stamp{ 0%{ transform:translate(-50%,-50%) rotate(-18deg) scale(.9); opacity:0 } 100%{ transform:translate(-50%,-50%) rotate(-18deg) scale(1); opacity:.9 } }
 
 /* =========================================================
    Small helpers

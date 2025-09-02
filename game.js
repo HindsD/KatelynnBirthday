@@ -30,7 +30,7 @@
 
       if (course.compact) {
         course.obstacles = [];                  // remove walls/wings on phones
-        course.windmill = null;
+        course.windmill = null;                 // windmill off on small screens
       } else {
         course.windmill = { cx: course.hole.x, cy: course.hole.y, len: 50, thick: 8, speed: 0.9 };
         course.obstacles = [
@@ -43,7 +43,6 @@
       ball.r = 7*scale;
       resetBall(true);
     }
-
 
     function size(){
       const r = canvas.getBoundingClientRect();
@@ -90,7 +89,6 @@
     }, { passive:false });
     canvas.addEventListener("pointercancel", (e)=>{ try { canvas.releasePointerCapture?.(e.pointerId); } catch {} }, { passive:false });
     document.addEventListener('touchmove', e => { if (aiming) e.preventDefault(); }, { passive:false });
-
 
     function circleRectCollide(cx,cy,r, rx,ry,rw,rh){
       const nx = Math.max(rx, Math.min(cx, rx+rw));
@@ -168,7 +166,7 @@
         }
       }
 
-      // windmill
+      // windmill (guarded on mobile)
       const wm = course.windmill;
       if (wm) {
         const angle = (performance.now()/1000) * wm.speed;
@@ -204,15 +202,6 @@
       if (!sunk && d < hr*0.95 && Math.hypot(ball.vx,ball.vy) < speedCap) {
         sunk = true; ball.rolling=false; ball.vx=ball.vy=0; ball.x=hx; ball.y=hy; onSunk();
       }
-    //   if(!sunk && !ball.rolling){
-    //     const idle = performance.now() - lastMoveTime;
-    //     if(idle > 800){
-    //       ball.vx += (course.hole.x - ball.x) * 0.0012;
-    //       ball.vy += (course.hole.y - ball.y) * 0.0012;
-    //       ball.rolling = true;
-    //       lastMoveTime = performance.now();
-    //     }
-    //   }
     }
 
     function draw(){
@@ -240,8 +229,8 @@
         }
       }
 
-      // retro decor (hide on very small widths)
-      const showDecor = W >= 380;
+      // retro decor (always on, even mobile)
+      const showDecor = true;
       function drawCar(x, y, scale=1, body="#0ea5e9"){
         if(!showDecor) return;
         ctx.save(); ctx.translate(x,y); ctx.scale(scale,scale);
@@ -268,24 +257,22 @@
       drawPlate(W - p0 - 80, H/2, "MITZI", 8);
       drawPlate(W/2 + 60, H - p0 - 40, "TUNDRA", -6);
 
-      // windmill
-      // windmill (only when present)
+      // windmill (drawn only when present)
       const wm = course.windmill;
       if (wm) {
         const t = performance.now() / 1000 * wm.speed;
         ctx.save();
         ctx.translate(wm.cx, wm.cy);
         ctx.rotate(t);
-        ctx.fillStyle = '#2563eb';
+        ctx.fillStyle = '#723d11ff';
         ctx.fillRect(-wm.len, -wm.thick, wm.len * 2, wm.thick * 2);
         ctx.restore();
 
-        ctx.fillStyle = '#1e40af';
+        ctx.fillStyle = '#723d11ff';
         ctx.beginPath();
         ctx.arc(wm.cx, wm.cy, 10, 0, Math.PI * 2);
         ctx.fill();
       }
-
 
       // hole
       const hx=course.hole.x, hy=course.hole.y, hr=course.hole.r;

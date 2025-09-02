@@ -110,34 +110,68 @@
     buildMain();
   }
 
-  // Start the game; reveal main after win
-  // (Guard in case startMiniGolf is missing due to script order)
-  if (typeof window.startMiniGolf === "function") {
-    window.startMiniGolf("#golf").then(startMain);
-  } else {
-    console.error("startMiniGolf not found. Ensure game.js is loaded before app.js.");
-  }
+/* ----------------- Boot: wire "Have a code?" first, then start game ----------------- */
 
-  // Skip via code (same K+D shortcut as before, unchanged)
+// Attach the "Have a code?" handler immediately on DOM ready
+document.addEventListener("DOMContentLoaded", () => {
+  wireHaveCode();
+  safeStartMiniGolf();
+});
+
+function wireHaveCode() {
   const skip = document.getElementById("skipLink");
-  if (skip) {
-    skip.addEventListener("click", () => {
-      const overlay = openModal({
-        title: "Enter your code",
-        html: `<input id="codeInput" class="input" placeholder="K+D" aria-label="Enter code" />`,
-        actions: [
-          { label: "Cancel", variant: "secondary", onClick: closeModal },
-          { label: "Submit", onClick: () => {
-              const v = (document.getElementById("codeInput").value || "").trim().toUpperCase();
-              if (v === "K+D" || v === "K + D" || v === "KD") { closeModal(); startMain(); }
-              else openModal({ title:"Oops", html:`<p>That code didn’t work.</p>`, actions:[{label:"OK", onClick:closeModal}] });
-            }}
-        ]
-      });
-      const input = overlay.querySelector("#codeInput");
-      input.addEventListener("keydown", e=>{ if(e.key==="Enter"){ overlay.querySelector(".modalActions button:last-child").click(); } });
+  if (!skip) return;
+
+  skip.addEventListener("click", (e) => {
+    e.preventDefault();
+    const overlay = openModal({
+      title: "Enter your code",
+      html: `<input id="codeInput" class="input" placeholder="K+D" aria-label="Enter code" />`,
+      actions: [
+        { label: "Cancel", variant: "secondary", onClick: closeModal },
+        {
+          label: "Submit",
+          onClick: () => {
+            const v = (document.getElementById("codeInput").value || "")
+              .trim()
+              .toUpperCase();
+            if (v === "K+D" || v === "K + D" || v === "KD") {
+              closeModal();
+              startMain();
+            } else {
+              openModal({
+                title: "Oops",
+                html: `<p>That code didn’t work.</p>`,
+                actions: [{ label: "OK", onClick: closeModal }],
+              });
+            }
+          },
+        },
+      ],
     });
+    const input = overlay.querySelector("#codeInput");
+    input.addEventListener("keydown", (e2) => {
+      if (e2.key === "Enter") {
+        overlay.querySelector(".modalActions button:last-child").click();
+      }
+    });
+  }, { passive: false });
+}
+
+function safeStartMiniGolf() {
+  try {
+    if (typeof window.startMiniGolf === "function") {
+      window.startMiniGolf("#golf").then(startMain).catch((err) => {
+        console.warn("Mini-golf failed to start:", err);
+      });
+    } else {
+      console.error("startMiniGolf not found. Ensure game.js is loaded before app.js.");
+    }
+  } catch (e) {
+    console.warn("Mini-golf init threw:", e);
   }
+}
+
 
   function buildMain(){
     // Tabs

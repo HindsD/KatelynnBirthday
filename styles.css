@@ -1,77 +1,127 @@
+/* =========================================================
+   Katelynn’s Mini-Golf Course — styles.css (full sheet)
+   ========================================================= */
+
+/* ---------- Theme tokens ---------- */
 :root{
-  --brand:#2563eb; --brand-2:#60a5fa; --accent:#a7f3d0;
-  --bg: radial-gradient(1200px 800px at 10% 10%, #eef6ff 0%, #f7fbff 45%, #ffffff 100%);
-  --card:#ffffff; --text:#0f172a; --muted:#667085; --shadow:0 12px 30px rgba(0,0,0,.12);
+  --brand:#2563eb;         /* primary blue */
+  --brand-2:#60a5fa;       /* light blue */
+  --accent:#34b3a0;        /* teal edge */
+  --text:#0f172a;          /* ink */
+  --muted:#667085;         /* slate */
+  --card:#ffffff;
+  --shadow:0 12px 30px rgba(0,0,0,.12);
   --radius:20px;
+  --bg: radial-gradient(1200px 800px at 10% 10%, #eef6ff 0%, #f7fbff 45%, #ffffff 100%);
 }
 @media (prefers-color-scheme: dark){
-  :root{ --bg: radial-gradient(1200px 800px at 10% 10%, #0b1020 0%, #0a0f18 45%, #0a0a12 100%);
-    --card:#121621; --text:#e5eaf4; --muted:#9aa3b2; --shadow:0 10px 28px rgba(0,0,0,.45); }
+  :root{
+    --text:#e5eaf4; --muted:#9aa3b2; --card:#121621;
+    --shadow:0 10px 28px rgba(0,0,0,.45);
+    --bg: radial-gradient(1200px 800px at 10% 10%, #0b1020 0%, #0a0f18 45%, #0a0a12 100%);
+  }
 }
 
-*{box-sizing:border-box}
-html,body{height:100%}
-body{ margin:0; font-family:Nunito,system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  letter-spacing:.1px; color:var(--text); background:var(--bg); overflow-x:hidden; }
+/* ---------- Base ---------- */
+*{ box-sizing:border-box }
+html,body{ height:100% }
+html,body{ overscroll-behavior-y: contain; }
+body{
+  margin:0; color:var(--text);
+  font-family: Nunito, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background:var(--bg);
+  letter-spacing:.1px;
+}
 
-.wrap{max-width:980px; margin:0 auto; padding:20px clamp(16px,4vw,40px) 80px;}
-header.wrap{ position:sticky; top:0; z-index:30; backdrop-filter: blur(6px);
+/* Layout wrappers */
+.wrap{ max-width:980px; margin:0 auto; padding:20px clamp(16px,4vw,40px) 80px; }
+header.wrap{
+  position:sticky; top:0; z-index:30;
+  display:flex; align-items:center; gap:12px;
+  padding:12px clamp(8px,3vw,16px);
+  backdrop-filter: blur(6px);
   background:linear-gradient(to bottom, rgba(255,255,255,.65), transparent);
-  padding:12px clamp(8px,3vw,16px); display:flex; align-items:center; gap:12px; }
-@media (prefers-color-scheme:dark){ header.wrap{background:linear-gradient(to bottom, rgba(0,0,0,.35), transparent);} }
-.brand{font-weight:800; letter-spacing:.2px; display:flex; align-items:center; gap:.55rem}
-.spacer{flex:1}
+}
+@media (prefers-color-scheme:dark){
+  header.wrap{ background:linear-gradient(to bottom, rgba(0,0,0,.35), transparent); }
+}
+.brand{ font-weight:800; letter-spacing:.2px; display:flex; align-items:center; gap:.55rem; }
+.spacer{ flex:1; }
 
-button{ appearance:none; border:none; cursor:pointer; border-radius:14px; font-weight:800;
-  padding:.8rem 1rem; box-shadow:var(--shadow); background:linear-gradient(135deg,var(--brand),var(--brand-2)); color:#fff; }
-button.secondary{ background:var(--card); color:var(--text); border:1px solid rgba(0,0,0,.08); }
-button:active{transform:translateY(1px) scale(.99)}
+/* ---------- Buttons & links ---------- */
+button{
+  appearance:none; border:none; cursor:pointer; border-radius:14px; font-weight:800;
+  padding:.8rem 1rem; box-shadow:var(--shadow);
+  background:linear-gradient(135deg,var(--brand),var(--brand-2)); color:#fff;
+}
+button.secondary{ background:var(--card); color:var(--text); border:1px solid rgba(0,0,0,.08); box-shadow:var(--shadow); }
+button:active{ transform: translateY(1px) scale(.99); }
+button[disabled]{ opacity:.6; cursor:not-allowed; }
+
 .linklike{ background:transparent; border:none; color:#3b82f6; font-weight:800; padding:.2rem .4rem; border-radius:8px; cursor:pointer; }
 .linklike:hover{ text-decoration: underline; }
 
-.card{ background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
-  border:1px solid rgba(0,0,0,.06); padding:18px; position:relative; overflow:visible; margin-top:16px; }
-.center{text-align:center} .muted{color:var(--muted)} .hidden{display:none}
-.pill{display:inline-flex; align-items:center; gap:.5rem; border-radius:999px; padding:.45rem .8rem; background:var(--card); color:var(--muted); border:1px solid rgba(0,0,0,.06)}
-.score{color:#0ea5e9; font-weight:800}
-.game-title{margin:6px 0 10px; text-align:center; font-size:clamp(22px,4.2vw,40px)}
-
-/* golf */
-.golfWrap{display:grid; gap:10px; justify-items:center}
-#golf{
-  width:min(740px, 100%);
-  aspect-ratio: 16/9;
-  border-radius:18px;
-  background: radial-gradient(100% 120% at 50% 20%, #d9f7c7 0%, #bff0a8 50%, #a8e58f 100%);
-  border:2px solid #34b3a0; box-shadow:var(--shadow); touch-action:none;
+/* ---------- Cards / basic UI ---------- */
+.card{
+  background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+  border:1px solid rgba(0,0,0,.06); padding:18px; position:relative; overflow:visible; margin-top:16px;
 }
-.hud{display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:center}
+.center{ text-align:center } .muted{ color:var(--muted) } .hidden{ display:none }
+.pill{ display:inline-flex; align-items:center; gap:.5rem; border-radius:999px; padding:.45rem .8rem; background:var(--card); color:var(--muted); border:1px solid rgba(0,0,0,.06) }
+.score{ color:#0ea5e9; font-weight:800 }
+.game-title{ margin:6px 0 10px; text-align:center; font-size:clamp(22px,4.2vw,40px) }
 
-/* MOBILE golf tweaks */
-@media (max-width: 560px){
-  .wrap{ padding:14px 14px 60px; }
-  .card{ padding:14px; border-radius:16px; }
-  #golf{ border-radius:14px; border-width:1.5px; }
-  .pill{ padding:.4rem .7rem; }
+/* ---------- Tabs ---------- */
+.tabs{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+.tab{
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  color:#fff; border:none; border-radius:999px; padding:.55rem 1rem; font-weight:800;
+  box-shadow:0 10px 20px rgba(37,99,235,.18); opacity:.9;
+}
+.tab[aria-selected="true"]{ opacity:1; box-shadow:0 0 0 2px rgba(255,255,255,.7), 0 6px 16px rgba(0,0,0,.18) }
+.view{ min-height:220px }
+
+/* ---------- Lovey main screen background ---------- */
+#mainScreen.lovey{
+  background: radial-gradient(120% 120% at 50% 10%, #eaf4ff 0%, #dbeafe 40%, #e0f7ff 100%);
+  position:relative; overflow:visible;
 }
 
-/* petals overlay */
+/* ---------- Petals ---------- */
 #petalLayer{ position:fixed; inset:0; pointer-events:none; z-index:25; overflow:visible; }
 .petal{ position:absolute; top:-40px; font-size:18px; animation:fall linear forwards; opacity:.9; text-shadow:0 6px 18px rgba(0,0,0,.15); }
 @keyframes fall{ 0%{ transform:translateY(-40px) rotate(0); opacity:0 } 10%{opacity:.95} 100%{ transform:translateY(110vh) rotate(360deg); opacity:0 } }
 
-/* tabs */
-.tabs{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px}
-.tab{ background:linear-gradient(135deg,var(--brand),var(--brand-2));
-  color:#fff; border:none; border-radius:999px; padding:.55rem 1rem; font-weight:800;
-  box-shadow:0 10px 20px rgba(37,99,235,.18); opacity:.9; }
-.tab[aria-selected="true"]{opacity:1; box-shadow:0 0 0 2px rgba(255,255,255,.7), 0 6px 16px rgba(0,0,0,.18)}
-.view{min-height:220px}
+/* =========================================================
+   Golf
+   ========================================================= */
 
-/* lovey blue bg */
-#mainScreen.lovey{ background: radial-gradient(120% 120% at 50% 10%, #eaf4ff 0%, #dbeafe 40%, #e0f7ff 100%); position:relative; overflow:visible; }
+.golfWrap{ display:grid; gap:10px; justify-items:center; }
+#golf{
+  width:100%; max-width:700px; aspect-ratio:16/9; display:block; margin:0 auto;
+  border-radius:18px; border:2px solid var(--accent); box-shadow:var(--shadow);
+  background: radial-gradient(100% 120% at 50% 20%, #d9f7c7 0%, #bff0a8 50%, #a8e58f 100%);
+  touch-action:none; -webkit-user-select:none; user-select:none;
+}
+.hud{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:center; }
 
-/* envelope – supports LONG content */
+/* Mobile: make the card lighter and the canvas taller */
+.card:has(#golf){ padding: 12px 12px 16px; }
+@media (max-width: 560px){
+  .wrap{ padding:14px 14px 60px; }
+  .card{ padding:14px; border-radius:16px; }
+  .pill{ padding:.4rem .7rem; }
+  .game-title{ font-size: clamp(22px, 6vw, 28px); }
+}
+@media (max-width: 500px){
+  .card:has(#golf){ background:transparent; box-shadow:none; border:none; padding:6px 6px 0; }
+  #golf{ aspect-ratio: 4 / 3; max-width:100%; height:auto; border-radius:14px; border-width:1.5px; }
+}
+
+/* =========================================================
+   Envelope (long-content friendly)
+   ========================================================= */
+
 .envelope{
   position:relative; width:min(560px, 100%); margin:0 auto; aspect-ratio:16/10;
   border-radius:16px; display:grid; place-items:center; padding:16px;
@@ -94,7 +144,10 @@ button:active{transform:translateY(1px) scale(.99)}
 .envelope.open .letter{ transform:translateY(-6%); opacity:1; }
 .letter p{ margin:0; text-align:center; font-size:clamp(16px,2.6vw,20px); line-height:1.65; white-space:pre-wrap; }
 
-/* ===== Modals ===== */
+/* =========================================================
+   Modals
+   ========================================================= */
+
 .modalOverlay{
   position:fixed; inset:0; background:rgba(10,20,35,.45); backdrop-filter: blur(6px);
   display:grid; place-items:center; z-index:40; animation:fadeIn .18s ease-out;
@@ -118,20 +171,19 @@ button:active{transform:translateY(1px) scale(.99)}
 }
 .input:focus{ box-shadow:0 0 0 3px rgba(37,99,235,.18); border-color:#93c5fd; }
 
-/* compact voucher cards (unchanged rendering) */
-/* .voucher{ display:grid; gap:6px; align-items:start; grid-template-columns: 1fr auto; border:1px dashed rgba(0,0,0,.18); border-radius:12px; padding:12px 14px; margin:10px 0; }
-.voucher > .secondary { align-self:center; } */
+/* =========================================================
+   Vouchers (ticket cards + grid + redeemed stamp)
+   ========================================================= */
 
-/* Vouchers grid */
 #view-vouchers h2{ margin-bottom: 10px; }
 .vouchersGrid{
   display:grid; gap:12px;
-  grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
 }
 
-/* Ticket-style card */
+/* Ticket-style card with side cut-outs */
 .ticket{
-  position:relative;
+  position:relative; z-index:0;
   background:linear-gradient(180deg,#fff, #f6faff);
   border:1px solid rgba(0,0,0,.08);
   border-radius:16px;
@@ -142,7 +194,7 @@ button:active{transform:translateY(1px) scale(.99)}
 .ticket::before, .ticket::after{
   content:""; position:absolute; top:50%; width:18px; height:18px; border-radius:50%;
   background: radial-gradient(circle at 50% 50%, #e7eefc 0 55%, transparent 56%);
-  transform: translateY(-50%);
+  transform: translateY(-50%); z-index:1; pointer-events:none;
 }
 .ticket::before{ left:-9px; }
 .ticket::after{ right:-9px; }
@@ -156,37 +208,23 @@ button:active{transform:translateY(1px) scale(.99)}
 .ticketBody{ color:var(--muted); margin-bottom:10px; min-height:40px; }
 .ticketActions{ display:flex; justify-content:flex-end; }
 
-/* keep your .ticket, .ticket::before, .ticket::after as-is, but add z-indexes */
-.ticket{ position:relative; /* you already have this */ z-index:0; }
-.ticket::before, .ticket::after{
-  /* the round side cut-outs */
-  z-index:1; pointer-events:none;
-}
-
-/* Redeemed overlay as a child element */
+/* Redeemed overlay element (child inside .ticket) */
 .redeemedMark{
-  position:absolute;
-  inset:0;
+  position:absolute; inset:0;
   display:flex; align-items:center; justify-content:center;
-  font-weight:900; font-size:26px;
-  color:#dc2626;
-  text-transform:uppercase;
-  transform:rotate(-18deg);
-  opacity:0;                     /* hidden by default */
-  pointer-events:none;
-  z-index:3;                     /* above everything on the card */
+  font-weight:900; font-size:26px; color:#dc2626; text-transform:uppercase;
+  transform:rotate(-18deg); opacity:0; pointer-events:none; z-index:3;
   transition:opacity .2s ease;
 }
 .ticket.redeemed .redeemedMark{ opacity:.88; }
+.ticket.redeemed .redeemedMark{ animation: stamp .24s ease-out both; }
+@keyframes stamp{ 0%{ transform:rotate(-18deg) scale(.9); opacity:0 } 100%{ transform:rotate(-18deg) scale(1); opacity:.88 } }
 
-.ticket.redeemed .redeemedMark{
-  animation: stamp .24s ease-out both;
-}
-@keyframes stamp{
-  0%{ transform:rotate(-18deg) scale(.9); opacity:0 }
-  100%{ transform:rotate(-18deg) scale(1); opacity:.88 }
-}
+/* =========================================================
+   Small helpers
+   ========================================================= */
 
-@media (max-width: 430px){
-  #golf{ aspect-ratio: 3 / 2; }   /* was 16/9 – this gives more vertical room */
-}
+.cheer{ display:flex; align-items:center; gap:.5rem; justify-content:center; margin-top:8px; color:var(--muted); }
+
+/* Ensure other content doesn’t overlap petals on mobile */
+@media (max-width: 500px){ #petalLayer{ pointer-events:none; } }

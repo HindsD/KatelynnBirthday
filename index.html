@@ -3,15 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Katelynn’s Mini-Golf Course ⛳️💙</title>
+  <title>Katelynn’s Mini-Golf Course ⛳️</title>
   <meta name="theme-color" content="#3b82f6" />
   <link rel="icon" href="data:,">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
+
+    <!-- 1) Supabase library -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- 2) Your config (contains SUPABASE keys) -->
+  <script defer src="config.js"></script>
+
+  <!-- 3) Game engine -->
+  <script defer src="game.js"></script>
+
+  <!-- 4) App logic (uses supabase + game) -->
+  <script defer src="app.js"></script>
 </head>
 <body>
   <header class="wrap">
-    <div class="brand">💙⛳️ <span>Katelynn’s Mini-Golf Course</span></div>
+    <div class="brand">⛳️ <span>Katelynn’s Mini-Golf Course</span></div>
     <div class="spacer"></div>
   </header>
 
@@ -54,7 +66,7 @@
       </section>
 
       <section id="view-reasons" class="view hidden" role="tabpanel" aria-labelledby="reasons">
-        <h2>10 reasons I adore you, Unc 💙</h2>
+        <h2>10 reasons I adore you 💙</h2>
         <div class="reveal open"><ul id="reasonsList"></ul></div>
       </section>
 
@@ -69,5 +81,6 @@
   <script src="config.js"></script>
   <script src="game.js"></script>
   <script src="app.js"></script>
+
 </body>
 </html>

@@ -119,5 +119,70 @@ button:active{transform:translateY(1px) scale(.99)}
 .input:focus{ box-shadow:0 0 0 3px rgba(37,99,235,.18); border-color:#93c5fd; }
 
 /* compact voucher cards (unchanged rendering) */
-.voucher{ display:grid; gap:6px; align-items:start; grid-template-columns: 1fr auto; border:1px dashed rgba(0,0,0,.18); border-radius:12px; padding:12px 14px; margin:10px 0; }
-.voucher > .secondary { align-self:center; }
+/* .voucher{ display:grid; gap:6px; align-items:start; grid-template-columns: 1fr auto; border:1px dashed rgba(0,0,0,.18); border-radius:12px; padding:12px 14px; margin:10px 0; }
+.voucher > .secondary { align-self:center; } */
+
+/* Vouchers grid */
+#view-vouchers h2{ margin-bottom: 10px; }
+.vouchersGrid{
+  display:grid; gap:12px;
+  grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
+}
+
+/* Ticket-style card */
+.ticket{
+  position:relative;
+  background:linear-gradient(180deg,#fff, #f6faff);
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:16px;
+  box-shadow: var(--shadow);
+  padding:14px 14px 12px;
+  overflow:hidden;
+}
+.ticket::before, .ticket::after{
+  content:""; position:absolute; top:50%; width:18px; height:18px; border-radius:50%;
+  background: radial-gradient(circle at 50% 50%, #e7eefc 0 55%, transparent 56%);
+  transform: translateY(-50%);
+}
+.ticket::before{ left:-9px; }
+.ticket::after{ right:-9px; }
+
+.ticketHead{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:6px; }
+.ticketTitle{ font-weight:800; }
+.ticketStamp{
+  background:#e0ecff; color:#1d4ed8; border:1px solid #c3d8ff;
+  padding:.2rem .5rem; border-radius:999px; font-weight:800; font-size:12px;
+}
+.ticketBody{ color:var(--muted); margin-bottom:10px; min-height:40px; }
+.ticketActions{ display:flex; justify-content:flex-end; }
+
+/* keep your .ticket, .ticket::before, .ticket::after as-is, but add z-indexes */
+.ticket{ position:relative; /* you already have this */ z-index:0; }
+.ticket::before, .ticket::after{
+  /* the round side cut-outs */
+  z-index:1; pointer-events:none;
+}
+
+/* Redeemed overlay as a child element */
+.redeemedMark{
+  position:absolute;
+  inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:26px;
+  color:#dc2626;
+  text-transform:uppercase;
+  transform:rotate(-18deg);
+  opacity:0;                     /* hidden by default */
+  pointer-events:none;
+  z-index:3;                     /* above everything on the card */
+  transition:opacity .2s ease;
+}
+.ticket.redeemed .redeemedMark{ opacity:.88; }
+
+.ticket.redeemed .redeemedMark{
+  animation: stamp .24s ease-out both;
+}
+@keyframes stamp{
+  0%{ transform:rotate(-18deg) scale(.9); opacity:0 }
+  100%{ transform:rotate(-18deg) scale(1); opacity:.88 }
+}

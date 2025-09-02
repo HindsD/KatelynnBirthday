@@ -22,24 +22,25 @@
 
     function buildCourse(){
       const p = course.pad;
-      // scale down on small canvases
-      course.compact = W < 430;
-      const scale = course.compact ? 0.85 : 1;
+      course.compact = W < 430;             // phone breakpoint
+      const scale = course.compact ? 0.9 : 1;
 
-      course.tee  = { x: p + 30*scale, y: H - p - 168*scale, r: 7*scale };
-      course.hole = { x: W - p - 84*scale, y: p + 68*scale, r: 20*scale };
-      course.windmill = { cx: course.hole.x, cy: course.hole.y, len: 50*scale, thick: 8*scale, speed: 0.9 };
+      course.tee  = { x: p + 52*scale, y: H - p - 148*scale, r: 7*scale };
+      course.hole = { x: W - p - 84*scale, y: p + 68*scale, r: 16*scale };
 
-      const wallW = (course.compact ? 14 : 18);
-      const wingW = (course.compact ? 10 : 12);
-      const wingH1 = (course.compact ? 92 : 110);
-      const wingH2 = (course.compact ? 88 : 100);
-
-      course.obstacles = [
-        { x: W*0.42, y: H*(course.compact?0.32:0.30), w: wallW, h: H*(course.compact?0.46:0.48) },
-        { x: course.hole.x - 120*scale, y: course.hole.y - 70*scale, w: wingW, h: wingH1, angle: 22, type:"wing" },
-        { x: course.hole.x - 58*scale,  y: course.hole.y + 18*scale, w: wingW, h: wingH2, angle:-28, type:"wing" }
-      ];
+      if (course.compact) {
+        // MOBILE: wide-open, no obstacles, no windmill (keeps decor!)
+        course.obstacles = [];
+        course.windmill = null;
+      } else {
+        // DESKTOP/TABLET: keep the fun course
+        course.windmill = { cx: course.hole.x, cy: course.hole.y, len: 50, thick: 8, speed: 0.9 };
+        course.obstacles = [
+          { x: W*0.42, y: H*0.30, w: 18, h: H*0.48 },                // center wall
+          { x: course.hole.x - 120, y: course.hole.y - 70, w: 12, h:110, angle: 22, type:"wing" },
+          { x: course.hole.x - 58,  y: course.hole.y + 18, w: 12, h:100, angle:-28, type:"wing" }
+        ];
+      }
 
       ball.r = 7*scale;
       resetBall(true);
@@ -155,20 +156,22 @@
 
       // windmill
       const wm = course.windmill;
-      const angle = (performance.now()/1000) * wm.speed;
-      const x1 = wm.cx + Math.cos(angle)*wm.len, y1 = wm.cy + Math.sin(angle)*wm.len;
-      const x2 = wm.cx - Math.cos(angle)*wm.len, y2 = wm.cy - Math.sin(angle)*wm.len;
-      const ABx=x2-x1, ABy=y2-y1, APx=ball.x-x1, APy=ball.y-y1;
-      const t = Math.max(0, Math.min(1, (APx*ABx+APy*ABy)/(ABx*ABx+ABy*ABy)));
-      const Cx = x1 + ABx*t, Cy = y1 + ABy*t;
-      const dist = Math.hypot(ball.x-Cx, ball.y-Cy);
-      if(dist <= ball.r + wm.thick){
-        const nx = (ball.x-Cx)/(dist||1), ny = (ball.y-Cy)/(dist||1);
-        const dot = ball.vx*nx + ball.vy*ny;
-        ball.vx = (ball.vx - 2*dot*nx) * BOUNCE;
-        ball.vy = (ball.vy - 2*dot*ny) * BOUNCE;
-        ball.x += nx*(ball.r+wm.thick - dist + 0.5);
-        ball.y += ny*(ball.r+wm.thick - dist + 0.5);
+      if (wm) {
+        const angle = (performance.now()/1000) * wm.speed;
+        const x1 = wm.cx + Math.cos(angle)*wm.len, y1 = wm.cy + Math.sin(angle)*wm.len;
+        const x2 = wm.cx - Math.cos(angle)*wm.len, y2 = wm.cy - Math.sin(angle)*wm.len;
+        const ABx=x2-x1, ABy=y2-y1, APx=ball.x-x1, APy=ball.y-y1;
+        const t = Math.max(0, Math.min(1, (APx*ABx+APy*ABy)/(ABx*ABx+ABy*ABy)));
+        const Cx = x1 + ABx*t, Cy = y1 + ABy*t;
+        const dist = Math.hypot(ball.x-Cx, ball.y-Cy);
+        if(dist <= ball.r + wm.thick){
+          const nx = (ball.x-Cx)/(dist||1), ny = (ball.y-Cy)/(dist||1);
+          const dot = ball.vx*nx + ball.vy*ny;
+          ball.vx = (ball.vx - 2*dot*nx) * BOUNCE;
+          ball.vy = (ball.vy - 2*dot*ny) * BOUNCE;
+          ball.x += nx*(ball.r+wm.thick - dist + 0.5);
+          ball.y += ny*(ball.r+wm.thick - dist + 0.5);
+        }
       }
 
       // cup capture

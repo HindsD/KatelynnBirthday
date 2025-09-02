@@ -22,13 +22,16 @@ A note or whatvr
     "Etc."
   ],
   vouchers: [
-    { title:"Mini-Golf Rematch", note:"Somewhere a lil local and ice cream after" },
-    { title:"Cozy Night In", note:"I’ll cook + your movie" },
-    { title:"idk placeholder i gotta think", note:"yur" },
-    { title:"idk placeholder i gotta think", note:"yur" },
-    { title:"idk placeholder i gotta think", note:"yur" }
+    { id: "mini-golf-date", title: "Mini golf date", note: "9 holes + celebratory ice cream" },
+    { id: "flower-picnic",  title: "Flower picnic",  note: "Blue flowers + picnic basket" },
+    { id: "movie-night",    title: "Movie night",    note: "Your pick, snacks on me" }
   ],
   motionEnabled: !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+};
+
+window.SUPABASE = {
+  url: "https://gzbbdjtysrrtgpzdpxzo.supabase.co",    // ← copy from Settings → API
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6YmJkanR5c3JydGdwemRweHpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3NzQzNTIsImV4cCI6MjA3MjM1MDM1Mn0.rVPKKuZ3ZAW_FZk4-c2kkQucPzC2JhRnGqnQKP1_Pjw"                    // ← copy anon public key
 };
 
 

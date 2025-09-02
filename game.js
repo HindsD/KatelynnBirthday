@@ -269,11 +269,16 @@
       drawPlate(W/2 + 60, H - p0 - 40, "TUNDRA", -6);
 
       // windmill
-      const wm = course.windmill; const t = performance.now()/1000 * wm.speed;
-      ctx.save(); ctx.translate(wm.cx, wm.cy); ctx.rotate(t);
-      ctx.fillStyle='#2563eb'; ctx.fillRect(-wm.len, -wm.thick, wm.len*2, wm.thick*2);
-      ctx.restore();
-      ctx.fillStyle='#1e40af'; ctx.beginPath(); ctx.arc(wm.cx, wm.cy, 10, 0, Math.PI*2); ctx.fill();
+      // windmill (only when present)
+      const wm = course.windmill;
+      if (wm) {
+        const t = performance.now()/1000 * wm.speed;
+        ctx.save(); ctx.translate(wm.cx, wm.cy); ctx.rotate(t);
+        ctx.fillStyle='#2563eb'; ctx.fillRect(-wm.len, -wm.thick, wm.len*2, wm.thick*2);
+        ctx.restore();
+        ctx.fillStyle='#1e40af'; ctx.beginPath(); ctx.arc(wm.cx, wm.cy, 10, 0, Math.PI*2); ctx.fill();
+      }
+
 
       // hole
       const hx=course.hole.x, hy=course.hole.y, hr=course.hole.r;

@@ -5,26 +5,28 @@ window.CONFIG = {
   fromName: "Danny",
   note: `Happy Birthday, {HER}!!!
 
-A note or whatvr
+I am so incredibly lucky to have met you!! To me, you're perfect, you're everything I have ever wanted both inside and out. From the person that you are, to the laughs shared, your caring and nurturing soul. Your voice, to the way we hold each other. It's so relaxing, it reminds me of our first date and when I first met you, completely disarming, you make me feel safe. You encompass such an empathetic heart that I admire deeply. You're just so amazing to me and I hope we can celebrate today in all the ways you love!! HAPPYY BIRTHDAY KATELYNNN YEAHHHHHHHHH BABY!!!! MWAHHH 
 
-
+Yours,
 {ME}`,
   reasons: [
-    "Dope.",
-    "Swag.",
-    "Etc.",
-    "Etc.",
-    "Etc..",
-    "Etc.",
-    "Etc.",
-    "Etc.",
-    "Etc.",
-    "Etc."
+    "You are SO funny, you make me laugh all the time and it's so amazing and sweet",
+    "You're the first person I wanna share any good news with, and you always listen and care",
+    "Fortnite GOAT !!",
+    "You make even the most orginary, boring days feel special, you make me feel special",
+    "You remember and care about little things I mention",
+    "Umm... you're HOT !?!?! Hottest lady alive fr like what the helly",
+    "You make me wanna be the best version of myself",
+    "You made me sweets and they were SOOOOO good like you did not have to do that",
+    "You're such a smart and intelligent person, I like the way you talk about everything- serious and non-serious",
+    "Because you are Katelynn Kruse !! Exactly my type (5'4, dyed hair, etc etc.. if you know you know)"
   ],
   vouchers: [
-    { id: "mini-golf-date", title: "Mini golf date", note: "9 holes + celebratory ice cream" },
-    { id: "flower-picnic",  title: "Flower picnic",  note: "Blue flowers + picnic basket" },
-    { id: "movie-night",    title: "Movie night",    note: "Your pick, snacks on me" }
+    { id: "activity", title: "Activity date", note: "One date of your choice: bowling, mini golf, or something spontaneous + celebratory ice cream" },
+    { id: "food",  title: "Food !",  note: "I’ll take you anywhere you want to eat, no questions asked" },
+    { id: "stargazing",    title: "Stargazing",    note: "One night of stargazing, blankets, and wine (or hot chocolate)" },
+    { id: "shower", title: "Shower Together", note: "I’ll set it up with candles" },
+    { id: "fantasy",  title: "Fantasy",  note: "Your fantasy for the night is on me" },
   ],
   motionEnabled: !window.matchMedia('(prefers-reduced-motion: reduce)').matches
 };
